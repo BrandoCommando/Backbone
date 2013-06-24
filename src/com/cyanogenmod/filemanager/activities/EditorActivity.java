@@ -52,7 +52,6 @@ import android.widget.TextView;
 import android.widget.TextView.BufferType;
 import android.widget.Toast;
 
-import com.android.internal.util.HexDump;
 import com.cyanogenmod.filemanager.R;
 import com.cyanogenmod.filemanager.activities.preferences.EditorPreferenceFragment;
 import com.cyanogenmod.filemanager.activities.preferences.EditorSHColorSchemePreferenceFragment;
@@ -78,6 +77,7 @@ import com.cyanogenmod.filemanager.util.DialogHelper;
 import com.cyanogenmod.filemanager.util.ExceptionUtil;
 import com.cyanogenmod.filemanager.util.ExceptionUtil.OnRelaunchCommandResult;
 import com.cyanogenmod.filemanager.util.FileHelper;
+import com.cyanogenmod.filemanager.util.HexDump;
 import com.cyanogenmod.filemanager.util.ResourcesHelper;
 
 import java.io.ByteArrayInputStream;

@@ -30,7 +30,6 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.storage.StorageVolume;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -46,6 +45,7 @@ import com.cyanogenmod.filemanager.adapters.CheckableListAdapter;
 import com.cyanogenmod.filemanager.adapters.CheckableListAdapter.CheckableItem;
 import com.cyanogenmod.filemanager.console.ConsoleBuilder;
 import com.cyanogenmod.filemanager.model.FileSystemObject;
+import com.cyanogenmod.filemanager.model.FileSystemStorageVolume;
 import com.cyanogenmod.filemanager.preferences.DisplayRestrictions;
 import com.cyanogenmod.filemanager.preferences.FileManagerSettings;
 import com.cyanogenmod.filemanager.preferences.Preferences;
@@ -551,7 +551,7 @@ public class PickerActivity extends Activity
      */
     private void showStorageVolumesPopUp(View anchor) {
         // Create a list (but not checkable)
-        final StorageVolume[] volumes = StorageHelper.getStorageVolumes(PickerActivity.this);
+        final FileSystemStorageVolume[] volumes = StorageHelper.getStorageVolumes(PickerActivity.this);
         List<CheckableItem> descriptions = new ArrayList<CheckableItem>();
         if (volumes != null) {
             int cc = volumes.length;

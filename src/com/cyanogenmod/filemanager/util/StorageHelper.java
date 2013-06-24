@@ -18,10 +18,9 @@ package com.cyanogenmod.filemanager.util;
 import android.content.Context;
 import android.os.Environment;
 import android.os.storage.StorageManager;
-import android.os.storage.StorageVolume;
-
 import com.cyanogenmod.filemanager.FileManagerApplication;
 import com.cyanogenmod.filemanager.R;
+import com.cyanogenmod.filemanager.model.FileSystemStorageVolume;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -33,7 +32,7 @@ import java.lang.reflect.Method;
  */
 public final class StorageHelper {
 
-    private static StorageVolume[] sStorageVolumes;
+    private static FileSystemStorageVolume[] sStorageVolumes;
 
     /**
      * Method that returns the storage volumes defined in the system.  This method uses
@@ -44,14 +43,14 @@ public final class StorageHelper {
      * @return StorageVolume[] The storage volumes defined in the system
      */
     @SuppressWarnings("boxing")
-    public static synchronized StorageVolume[] getStorageVolumes(Context ctx) {
+    public static synchronized FileSystemStorageVolume[] getStorageVolumes(Context ctx) {
         if (sStorageVolumes == null) {
             //IMP!! Android SDK doesn't have a "getVolumeList" but is supported by CM10.
             //Use reflect to get this value (if possible)
             try {
                 StorageManager sm = (StorageManager) ctx.getSystemService(Context.STORAGE_SERVICE);
                 Method method = sm.getClass().getMethod("getVolumeList"); //$NON-NLS-1$
-                sStorageVolumes = (StorageVolume[])method.invoke(sm);
+                sStorageVolumes = (FileSystemStorageVolume[])method.invoke(sm);
 
             } catch (Exception ex) {
                 //Ignore. Android SDK StorageManager class doesn't have this method
@@ -67,8 +66,8 @@ public final class StorageHelper {
                     }
                     // Android SDK has a different constructor for StorageVolume. In CM10 the
                     // description is a resource id. Create the object by reflection
-                    Constructor<StorageVolume> constructor =
-                            StorageVolume.class.
+                    Constructor<FileSystemStorageVolume> constructor =
+                            FileSystemStorageVolume.class.
                                 getConstructor(
                                         String.class,
                                         String.class,
@@ -77,15 +76,15 @@ public final class StorageHelper {
                                         int.class,
                                         boolean.class,
                                         long.class);
-                    StorageVolume sv =
+                    FileSystemStorageVolume sv =
                             constructor.newInstance(path, description, false, false, 0, false, 0);
-                    sStorageVolumes = new StorageVolume[]{sv};
+                    sStorageVolumes = new FileSystemStorageVolume[]{sv};
                 } catch (Exception ex2) {
                     /**NON BLOCK**/
                 }
             }
             if (sStorageVolumes == null) {
-                sStorageVolumes = new StorageVolume[]{};
+                sStorageVolumes = new FileSystemStorageVolume[]{};
             }
         }
         return sStorageVolumes;
@@ -100,20 +99,9 @@ public final class StorageHelper {
      * @param volume The storage volume
      * @return String The description of the storage volume
      */
-    public static String getStorageVolumeDescription(Context ctx, StorageVolume volume) {
+    public static String getStorageVolumeDescription(Context ctx, FileSystemStorageVolume volume) {
         try {
-            Method method = volume.getClass().getMethod(
-                                            "getDescription", //$NON-NLS-1$
-                                            new Class[]{Context.class});
-            if (method == null) {
-                // AOSP
-                method = volume.getClass().getMethod("getDescription"); //$NON-NLS-1$
-                return (String)method.invoke(volume);
-            }
-
-            // CM10
-            return (String)method.invoke(volume, ctx);
-
+            return volume.getDescription();
         } catch (Throwable _throw) {
             // Returns the volume storage path
             return volume.getPath();
@@ -128,11 +116,11 @@ public final class StorageHelper {
      */
     public static boolean isPathInStorageVolume(String path) {
         String fso = FileHelper.getAbsPath(path);
-        StorageVolume[] volumes =
+        FileSystemStorageVolume[] volumes =
                 getStorageVolumes(FileManagerApplication.getInstance().getApplicationContext());
         int cc = volumes.length;
         for (int i = 0; i < cc; i++) {
-            StorageVolume vol = volumes[i];
+            FileSystemStorageVolume vol = volumes[i];
             if (fso.startsWith(vol.getPath())) {
                 return true;
             }
@@ -147,11 +135,11 @@ public final class StorageHelper {
      * @return boolean If the path is a storage volume
      */
     public static boolean isStorageVolume(String path) {
-        StorageVolume[] volumes =
+        FileSystemStorageVolume[] volumes =
                 getStorageVolumes(FileManagerApplication.getInstance().getApplicationContext());
         int cc = volumes.length;
         for (int i = 0; i < cc; i++) {
-            StorageVolume vol = volumes[i];
+            FileSystemStorageVolume vol = volumes[i];
             String p = new File(path).getAbsolutePath();
             String v = new File(vol.getPath()).getAbsolutePath();
             if (p.compareTo(v) == 0) {
@@ -168,11 +156,11 @@ public final class StorageHelper {
      * @return String The chrooted path
      */
     public static String getChrootedPath(String path) {
-        StorageVolume[] volumes =
+        FileSystemStorageVolume[] volumes =
                 getStorageVolumes(FileManagerApplication.getInstance().getApplicationContext());
         int cc = volumes.length;
         for (int i = 0; i < cc; i++) {
-            StorageVolume vol = volumes[i];
+            FileSystemStorageVolume vol = volumes[i];
             File p = new File(path);
             File v = new File(vol.getPath());
             if (p.getAbsolutePath().startsWith(v.getAbsolutePath())) {

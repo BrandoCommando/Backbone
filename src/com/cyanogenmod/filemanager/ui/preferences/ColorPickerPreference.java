@@ -16,8 +16,6 @@
 
 package com.cyanogenmod.filemanager.ui.preferences;
 
-import afzkl.development.mColorPicker.views.ColorDialogView;
-import afzkl.development.mColorPicker.views.ColorPanelView;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -32,6 +30,8 @@ import android.preference.Preference;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.afzkl.development.mColorPicker.views.ColorDialogView;
+import com.afzkl.development.mColorPicker.views.ColorPanelView;
 import com.cyanogenmod.filemanager.R;
 
 /**

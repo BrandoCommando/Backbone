@@ -19,7 +19,6 @@ package com.cyanogenmod.filemanager.commands.shell;
 import android.content.res.Resources;
 import android.content.res.XmlResourceParser;
 
-import com.android.internal.util.XmlUtils;
 import com.cyanogenmod.filemanager.FileManagerApplication;
 import com.cyanogenmod.filemanager.R;
 import com.cyanogenmod.filemanager.console.CommandNotFoundException;
@@ -28,6 +27,7 @@ import com.cyanogenmod.filemanager.console.InsufficientPermissionsException;
 import com.cyanogenmod.filemanager.preferences.FileManagerSettings;
 import com.cyanogenmod.filemanager.preferences.Preferences;
 import com.cyanogenmod.filemanager.util.ShellHelper;
+import com.cyanogenmod.filemanager.util.XmlUtils;
 
 import org.xmlpull.v1.XmlPullParserException;
 

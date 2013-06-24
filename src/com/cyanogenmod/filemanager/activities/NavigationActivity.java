@@ -32,7 +32,6 @@ import android.nfc.NfcEvent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.os.storage.StorageVolume;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -63,6 +62,7 @@ import com.cyanogenmod.filemanager.listeners.OnHistoryListener;
 import com.cyanogenmod.filemanager.listeners.OnRequestRefreshListener;
 import com.cyanogenmod.filemanager.model.DiskUsage;
 import com.cyanogenmod.filemanager.model.FileSystemObject;
+import com.cyanogenmod.filemanager.model.FileSystemStorageVolume;
 import com.cyanogenmod.filemanager.model.History;
 import com.cyanogenmod.filemanager.model.MountPoint;
 import com.cyanogenmod.filemanager.parcelables.HistoryNavigable;
@@ -666,7 +666,7 @@ public class NavigationActivity extends Activity
         if (this.mChRooted) {
             // Initial directory is the first external sdcard (sdcard, emmc, usb, ...)
             if (!StorageHelper.isPathInStorageVolume(initialDir)) {
-                StorageVolume[] volumes =
+                FileSystemStorageVolume[] volumes =
                         StorageHelper.getStorageVolumes(this);
                 if (volumes != null && volumes.length > 0) {
                     initialDir = volumes[0].getPath();

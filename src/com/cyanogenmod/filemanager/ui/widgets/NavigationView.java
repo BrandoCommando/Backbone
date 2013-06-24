@@ -21,7 +21,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.AsyncTask;
-import android.os.storage.StorageVolume;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -44,6 +43,7 @@ import com.cyanogenmod.filemanager.listeners.OnRequestRefreshListener;
 import com.cyanogenmod.filemanager.listeners.OnSelectionListener;
 import com.cyanogenmod.filemanager.model.Directory;
 import com.cyanogenmod.filemanager.model.FileSystemObject;
+import com.cyanogenmod.filemanager.model.FileSystemStorageVolume;
 import com.cyanogenmod.filemanager.model.ParentDirectory;
 import com.cyanogenmod.filemanager.model.Symlink;
 import com.cyanogenmod.filemanager.parcelables.NavigationViewInfoParcelable;
@@ -1285,7 +1285,7 @@ public class NavigationView extends RelativeLayout implements
         this.mChRooted = true;
 
         //Change to first storage volume
-        StorageVolume[] volumes =
+        FileSystemStorageVolume[] volumes =
                 StorageHelper.getStorageVolumes(getContext());
         if (volumes != null && volumes.length > 0) {
             changeCurrentDir(volumes[0].getPath(), false, true, false, null, null);
@@ -1317,7 +1317,7 @@ public class NavigationView extends RelativeLayout implements
 
         // Check if the path is owned by one of the storage volumes
         if (!StorageHelper.isPathInStorageVolume(newDir)) {
-            StorageVolume[] volumes = StorageHelper.getStorageVolumes(getContext());
+            FileSystemStorageVolume[] volumes = StorageHelper.getStorageVolumes(getContext());
             if (volumes != null && volumes.length > 0) {
                 return volumes[0].getPath();
             }

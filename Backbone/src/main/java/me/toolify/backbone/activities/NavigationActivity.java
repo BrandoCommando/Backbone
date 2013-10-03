@@ -60,10 +60,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.toolify.backbone.BuildConfig;
 import me.toolify.backbone.FileManagerApplication;
 import me.toolify.backbone.R;
 import me.toolify.backbone.actionmode.PropertiesModeCallback;
-import me.toolify.backbone.activities.preferences.SettingsPreferences;
 import me.toolify.backbone.adapters.NavigationFragmentPagerAdapter;
 import me.toolify.backbone.bus.BusProvider;
 import me.toolify.backbone.bus.events.BookmarkDeleteEvent;
@@ -699,7 +699,6 @@ public class NavigationActivity extends AbstractNavigationActivity
         return super.onKeyUp(keyCode, event);
     }
 
-
     /**
      * {@inheritDoc}
      */
@@ -711,66 +710,50 @@ public class NavigationActivity extends AbstractNavigationActivity
         return super.onCreateOptionsMenu(menu);
     }
 
-    public void setMenuChecked(Menu menu, boolean checked, int idCheck, int... idUncheck)
-    {
-        MenuItem item = menu.findItem(idCheck);
-        if(item == null) return;
-        for(int id : idUncheck)
-        {
-            MenuItem bad = menu.findItem(id);
-            if(bad != null)
-                bad.setChecked(false);
-        }
-        item.setChecked(checked);
-    }
-    public void setMenuChecked(Menu menu, int idCheck, int... idUncheck)
-    {
-        setMenuChecked(menu, true, idCheck, idUncheck);
-    }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
 
-    private void prepareSortOptions(Menu menu)
-    {
-        int[] allSorts = new int[] {
-                R.id.mnu_actions_sort_by_date_asc, R.id.mnu_actions_sort_by_date_desc,
-                R.id.mnu_actions_sort_by_name_asc, R.id.mnu_actions_sort_by_name_desc};
-        switch(getSortPreference())
-        {
+        // Ensure that the appropriate sort mode menuItem radio is selected
+        NavigationSortMode sortMode = NavigationSortMode.fromId(Preferences.getSharedPreferences()
+                .getInt(FileManagerSettings.SETTINGS_SORT_MODE.getId(),
+                        ((ObjectIdentifier)FileManagerSettings.SETTINGS_SORT_MODE
+                                .getDefaultValue()).getId()));
+        switch(sortMode) {
             case DATE_ASC:
-                setMenuChecked(menu, R.id.mnu_actions_sort_by_date_asc, allSorts);
+                menu.findItem(R.id.mnu_actions_sort_by_date_asc).setChecked(true);
                 break;
             case DATE_DESC:
-                setMenuChecked(menu, R.id.mnu_actions_sort_by_date_desc, allSorts);
+                menu.findItem(R.id.mnu_actions_sort_by_date_desc).setChecked(true);
                 break;
             case NAME_ASC:
-                setMenuChecked(menu, R.id.mnu_actions_sort_by_name_asc, allSorts);
+                menu.findItem(R.id.mnu_actions_sort_by_name_asc).setChecked(true);
                 break;
             case NAME_DESC:
-                setMenuChecked(menu, R.id.mnu_actions_sort_by_name_desc, allSorts);
+                menu.findItem(R.id.mnu_actions_sort_by_name_desc).setChecked(true);
                 break;
         }
-    }
 
-    private void prepareLayoutOptions(Menu menu)
-    {
-        int[] allLayouts = new int[] {
-                R.id.mnu_actions_layout_simple, R.id.mnu_actions_layout_icons, R.id.mnu_actions_layout_details
-        };
-        switch(getLayoutPreference())
-        {
+        // Ensure that the appropriate layout mode menuItem radio is selected
+        NavigationLayoutMode layoutMode = NavigationLayoutMode.fromId(Preferences.
+                getSharedPreferences().getInt(FileManagerSettings.SETTINGS_LAYOUT_MODE.getId(),
+                        ((ObjectIdentifier)FileManagerSettings.SETTINGS_LAYOUT_MODE
+                                .getDefaultValue()).getId()));
+        switch(layoutMode) {
             case ICONS:
-                setMenuChecked(menu, R.id.mnu_actions_layout_icons, allLayouts);
+                menu.findItem(R.id.mnu_actions_layout_icons).setChecked(true);
                 break;
             case DETAILS:
-                setMenuChecked(menu, R.id.mnu_actions_layout_details, allLayouts);
+                menu.findItem(R.id.mnu_actions_layout_details).setChecked(true);
                 break;
             case SIMPLE:
-                setMenuChecked(menu, R.id.mnu_actions_layout_simple, allLayouts);
+                menu.findItem(R.id.mnu_actions_layout_simple).setChecked(true);
                 break;
         }
-    }
 
-    private void prepareShowOptions(Menu menu)
-    {
+        // Ensure that the other view mode options are correctly selected
         int[] menuSettingIDs = new int[] {
                 R.id.mnu_actions_show_dirs_first,
                 R.id.mnu_actions_show_hidden,
@@ -783,24 +766,19 @@ public class NavigationActivity extends AbstractNavigationActivity
                 FileManagerSettings.SETTINGS_SHOW_SYSTEM,
                 FileManagerSettings.SETTINGS_SHOW_SYMLINKS
         };
-        for(int i = 0; i < menuSettingIDs.length; i++)
-            setMenuChecked(menu,
-                    getPreference(settingShows[i]),
-                    menuSettingIDs[i]);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-
-        prepareSortOptions(menu);
-        prepareLayoutOptions(menu);
-        prepareShowOptions(menu);
+        for(int i = 0; i < menuSettingIDs.length; i++) {
+            MenuItem item = menu.findItem(menuSettingIDs[i]);
+            if(item != null) {
+                item.setChecked(Preferences.getSharedPreferences().getBoolean(
+                        settingShows[i].getId(),
+                        Boolean.parseBoolean(settingShows[i].getDefaultValue().toString())));
+            }
+        }
 
         // Make paste action visible if there are files available for pasting
         menu.findItem(R.id.mnu_actions_paste_selection).setVisible(this.onAreFilesMarkedForPaste());
+        // Toggle layout mode visibility so that it is only visible in development mode
+        menu.findItem(R.id.mnu_actions_layout_mode).setVisible(BuildConfig.DEBUG);
         mFilesystemInfo = menu.findItem(R.id.mnu_actions_show_filesystem_info);
         setFilesystemStatusDrawable(mFilesystemStatus);
         return super.onPrepareOptionsMenu(menu);
@@ -867,47 +845,6 @@ public class NavigationActivity extends AbstractNavigationActivity
         a.recycle();
     }
 
-    public NavigationSortMode getSortPreference()
-    {
-        return NavigationSortMode.fromId(Preferences.getSharedPreferences()
-                        .getInt(FileManagerSettings.SETTINGS_SORT_MODE.getId(),
-                                ((ObjectIdentifier)FileManagerSettings.SETTINGS_SORT_MODE
-                                        .getDefaultValue()).getId()));
-    }
-    public NavigationLayoutMode getLayoutPreference()
-    {
-        return NavigationLayoutMode.fromId(Preferences.getSharedPreferences()
-                .getInt(FileManagerSettings.SETTINGS_LAYOUT_MODE.getId(),
-                        ((ObjectIdentifier)FileManagerSettings.SETTINGS_LAYOUT_MODE
-                                .getDefaultValue()).getId()));
-    }
-    public boolean getPreference(FileManagerSettings key)
-    {
-        return Preferences.getSharedPreferences().getBoolean(
-                key.getId(), Boolean.parseBoolean(key.getDefaultValue().toString()));
-    }
-    public void setPreference(FileManagerSettings key, int val)
-    {
-        Preferences.getSharedPreferences().edit()
-                .putInt(key.getId(), val).apply();
-        getCurrentNavigationFragment().refresh();
-    }
-    public void setPreference(FileManagerSettings key, boolean val)
-    {
-        Preferences.getSharedPreferences().edit()
-                .putBoolean(key.getId(), val).apply();
-        getCurrentNavigationFragment().refresh();
-    }
-    public void togglePreference(FileManagerSettings key)
-    {
-        setPreference(key, !Preferences.getSharedPreferences()
-                .getBoolean(key.getId(), (Boolean.parseBoolean(key.getDefaultValue().toString()))));
-    }
-    public void setSortingMode(NavigationSortMode mode)
-    {
-        setPreference(FileManagerSettings.SETTINGS_SORT_MODE, mode.getId());
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -922,44 +859,76 @@ public class NavigationActivity extends AbstractNavigationActivity
         // Action Items
         switch (item.getItemId()) {
             case R.id.mnu_actions_sort_by_date_asc:
-                setSortingMode(NavigationSortMode.DATE_ASC);
-                break;
-            case R.id.mnu_actions_sort_by_date_desc:
-                setSortingMode(NavigationSortMode.DATE_DESC);
-                break;
-            case R.id.mnu_actions_sort_by_name_asc:
-                setSortingMode(NavigationSortMode.NAME_ASC);
-                break;
-            case R.id.mnu_actions_sort_by_name_desc:
-                setSortingMode(NavigationSortMode.NAME_DESC);
-                break;
-            case R.id.mnu_actions_show_dirs_first:
-                togglePreference(FileManagerSettings.SETTINGS_SHOW_DIRS_FIRST);
-                break;
-            case R.id.mnu_actions_show_hidden:
-                togglePreference(FileManagerSettings.SETTINGS_SHOW_HIDDEN);
-                break;
-            case R.id.mnu_actions_show_system:
-                togglePreference(FileManagerSettings.SETTINGS_SHOW_SYSTEM);
-                break;
-            case R.id.mnu_actions_show_symlinks:
-                togglePreference(FileManagerSettings.SETTINGS_SHOW_SYMLINKS);
-                break;
-            case R.id.mnu_actions_layout_simple:
-                setPreference(FileManagerSettings.SETTINGS_LAYOUT_MODE,
-                        NavigationLayoutMode.SIMPLE.getId());
-                break;
-            case R.id.mnu_actions_layout_details:
-                setPreference(FileManagerSettings.SETTINGS_LAYOUT_MODE,
-                        NavigationLayoutMode.DETAILS.getId());
-                break;
-            case R.id.mnu_actions_layout_icons:
-                setPreference(FileManagerSettings.SETTINGS_LAYOUT_MODE,
-                        NavigationLayoutMode.ICONS.getId());
+                Preferences.getSharedPreferences().edit().putInt(
+                        FileManagerSettings.SETTINGS_SORT_MODE.getId(),
+                        NavigationSortMode.DATE_ASC.getId()).apply();
+                getCurrentNavigationFragment().refresh();
                 break;
 
+            case R.id.mnu_actions_sort_by_date_desc:
+                Preferences.getSharedPreferences().edit().putInt(
+                        FileManagerSettings.SETTINGS_SORT_MODE.getId(),
+                        NavigationSortMode.DATE_DESC.getId()).apply();
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_sort_by_name_asc:
+                Preferences.getSharedPreferences().edit().putInt(
+                        FileManagerSettings.SETTINGS_SORT_MODE.getId(),
+                        NavigationSortMode.NAME_ASC.getId()).apply();
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_sort_by_name_desc:
+                Preferences.getSharedPreferences().edit().putInt(
+                        FileManagerSettings.SETTINGS_SORT_MODE.getId(),
+                        NavigationSortMode.NAME_DESC.getId()).apply();
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_show_dirs_first:
+                toggleViewPreference(FileManagerSettings.SETTINGS_SHOW_DIRS_FIRST);
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_show_hidden:
+                toggleViewPreference(FileManagerSettings.SETTINGS_SHOW_HIDDEN);
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_show_system:
+                toggleViewPreference(FileManagerSettings.SETTINGS_SHOW_SYSTEM);
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_show_symlinks:
+                toggleViewPreference(FileManagerSettings.SETTINGS_SHOW_SYMLINKS);
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_layout_simple:
+                Preferences.getSharedPreferences().edit().putInt(
+                        FileManagerSettings.SETTINGS_LAYOUT_MODE.getId(),
+                        NavigationLayoutMode.SIMPLE.getId()).apply();
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_layout_details:
+                Preferences.getSharedPreferences().edit().putInt(
+                        FileManagerSettings.SETTINGS_LAYOUT_MODE.getId(),
+                        NavigationLayoutMode.DETAILS.getId()).apply();
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            case R.id.mnu_actions_layout_icons:
+                Preferences.getSharedPreferences().edit().putInt(
+                        FileManagerSettings.SETTINGS_LAYOUT_MODE.getId(),
+                        NavigationLayoutMode.ICONS.getId()).apply();
+                getCurrentNavigationFragment().refresh();
+                break;
+
+            // Show information of the filesystem
             case R.id.mnu_actions_show_filesystem_info:
-                //Show information of the filesystem
                 MountPoint mp = getCurrentNavigationFragment().getBreadcrumb().getMountPointInfo();
                 DiskUsage du = getCurrentNavigationFragment().getBreadcrumb().getDiskUsageInfo();
                 showMountPointInfo(mp, du);
@@ -973,11 +942,12 @@ public class NavigationActivity extends AbstractNavigationActivity
                 openSearch();
                 break;
 
+            // Refresh the current navigation fragment
             case R.id.mnu_actions_refresh:
                 getCurrentNavigationFragment().refresh();
                 break;
 
-            //- Create new object
+            // Create new object
             case R.id.mnu_actions_new_file:
                 showFileTypeDialog(new DialogInterface.OnClickListener() {
                     @Override
@@ -1002,12 +972,13 @@ public class NavigationActivity extends AbstractNavigationActivity
                 }
                 break;
 
+            // Open a properties drawer on the current directory
             case R.id.mnu_actions_properties_current_folder:
                 BusProvider.postEvent(new OpenPropertiesDrawerEvent(
                         getCurrentNavigationFragment().getCurrentDir()));
                 break;
 
-            //- Add to bookmarks
+            // Add current directory to bookmarks
             case R.id.mnu_actions_add_to_bookmarks:
                 try {
                     FileSystemObject bookmarkFso = CommandHelper.getFileInfo(this,
@@ -1020,17 +991,20 @@ public class NavigationActivity extends AbstractNavigationActivity
                 }
                 break;
 
-            case R.id.mnu_settings:
-                //Settings
-                Intent settings = new Intent(
-                        NavigationActivity.this, SettingsPreferences.class);
-                startActivity(settings);
-                break;
-
             default:
                return super.onOptionsItemSelected(item);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Convenience method for toggling a checkable view preference
+     * @param key The setting to toggle
+     */
+    public void toggleViewPreference(FileManagerSettings key) {
+        Preferences.getSharedPreferences().edit().putBoolean(key.getId(),
+                !Preferences.getSharedPreferences().getBoolean(key.getId(),
+                (Boolean.parseBoolean(key.getDefaultValue().toString())))).apply();
     }
 
     /**
@@ -1061,14 +1035,6 @@ public class NavigationActivity extends AbstractNavigationActivity
      */
     public void onActionBarItemClick(View view) {
         switch (view.getId()) {
-            //######################
-            //Navigation Custom Title
-            //######################
-            case R.id.ab_close:
-                //Hide navigation view configuration toolbar
-                getCurrentNavigationFragment().getCustomTitle().hideConfigurationView();
-                break;
-
             //######################
             //Selection Actions
             //######################
@@ -1229,11 +1195,6 @@ public class NavigationActivity extends AbstractNavigationActivity
     @Override
     public void onRequestMenu(NavigationFragment navFragment, FileSystemObject item) {
 
-    }
-
-    @Subscribe
-    public void onClosePropertiesDrawer(ClosePropertiesDrawerEvent event) {
-        finishPropertiesActionMode();
     }
 
     /**
@@ -1503,9 +1464,8 @@ public class NavigationActivity extends AbstractNavigationActivity
                 try {
                     String name = inputNameDialog.getName();
                     createNewFileSystemObject(fileTypeIndex, name);
-
                 } catch (InflateException e) {
-                    //TODO handle this exception properly
+                    Log.e(TAG, "Could not create the input name dialog");
                 }
             }
         });
@@ -1570,7 +1530,9 @@ public class NavigationActivity extends AbstractNavigationActivity
     }
 
     /**
-     * Function used to open a properties drawer/start a properties action mode on a file
+     * Method that opens a properties drawer and starts a properties action mode on a file
+     *
+     * @param event The event referencing the file
      */
     @Subscribe
     public void openPropertiesDrawer(OpenPropertiesDrawerEvent event) {
@@ -1618,6 +1580,16 @@ public class NavigationActivity extends AbstractNavigationActivity
             mDrawerLayout.openDrawer(mInfoDrawer);
             mInfoDrawer.loadFso(fso);
         }
+    }
+
+    /**
+     * Method that closes an open properties drawer and finishes the paired properties action mode
+     *
+     * @param event The event referencing the file
+     */
+    @Subscribe
+    public void onClosePropertiesDrawer(ClosePropertiesDrawerEvent event) {
+        finishPropertiesActionMode();
     }
 
     /**
@@ -1836,34 +1808,5 @@ public class NavigationActivity extends AbstractNavigationActivity
     void applyTheme() {
         Theme theme = ThemeManager.getCurrentTheme(this);
         theme.setBaseTheme(this, false);
-
-        View v;
-
-        /*
-        TODO: Either find a way to update action item icons via current methods or ensure the theme update mechanism
-        can trigger a normal theme update.
-        */
-
-        /*        View v = findViewById(R.id.ab_overflow);
-        theme.setImageDrawable(this, (ImageView)v, "ab_overflow_drawable"); //$NON-NLS-1$
-        v = findViewById(R.id.ab_actions);
-        theme.setImageDrawable(this, (ImageView)v, "ab_actions_drawable"); //$NON-NLS-1$
-        v = findViewById(R.id.ab_search);
-        theme.setImageDrawable(this, (ImageView)v, "ab_search_drawable"); //$NON-NLS-1$
-        v = findViewById(R.id.ab_bookmarks);
-        theme.setImageDrawable(this, (ImageView)v, "ab_bookmarks_drawable"); //$NON-NLS-1$
-        v = findViewById(R.id.ab_history);
-        theme.setImageDrawable(this, (ImageView)v, "ab_history_drawable"); //$NON-NLS-1$
-        //- Expanders
-        v = findViewById(R.id.ab_configuration);
-        theme.setImageDrawable(this, (ImageView)v, "expander_open_drawable"); //$NON-NLS-1$
-        v = findViewById(R.id.ab_close);
-        theme.setImageDrawable(this, (ImageView)v, "expander_close_drawable"); //$NON-NLS-1$
-        v = findViewById(R.id.ab_sort_mode);
-        theme.setImageDrawable(this, (ImageView)v, "ab_sort_mode_drawable"); //$NON-NLS-1$
-        v = findViewById(R.id.ab_layout_mode);
-        theme.setImageDrawable(this, (ImageView)v, "ab_layout_mode_drawable"); //$NON-NLS-1$
-        v = findViewById(R.id.ab_view_options);
-        theme.setImageDrawable(this, (ImageView)v, "ab_view_options_drawable"); //$NON-NLS-1$*/
     }
 }

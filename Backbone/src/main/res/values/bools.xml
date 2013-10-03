@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <bool name="DEBUG_MODE">true</bool>
-    <bool name="RELEASE_MODE">false</bool>
-</resources>

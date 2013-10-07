@@ -211,6 +211,32 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- Breadcrumb Selected Item Title -->
+    <style name="breadcrumb_selected_item_title_textappearance" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">?android:textColorPrimaryInverse</item>
+        <item name="android:textSize">@dimen/breadcrumb_title_text_size</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <!-- Breadcrumb Selected Item Subtitle -->
+    <style name="breadcrumb_selected_item_subtitle_textappearance" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Subtitle">
+        <item name="android:textColor">?android:textColorSecondaryInverse</item>
+        <item name="android:textSize">@dimen/breadcrumb_subtitle_text_size</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">start</item>
+    </style>
+
+    <!-- Breadcrumb Dropdown Item -->
+    <style name="breadcrumb_selected_dropdown_item_textappearance" parent="@android:style/Widget.Holo.DropDownItem">
+        <item name="android:textColor">?android:textColorPrimaryInverse</item>
+        <item name="android:textSize">@dimen/breadcrumb_dropdown_text_size</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:minHeight">48dp</item>
+    </style>
+
     <!-- Breadcrumb Element -->
     <style name="breadcrumb_elemement">
         <item name="android:gravity">center|center_vertical</item>

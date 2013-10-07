@@ -72,6 +72,18 @@
     <!-- The breadcrumb item minimal size -->
     <dimen name="breadcrumb_item_min_size">32dp</dimen>
 
+    <!-- Text size for breadcrumb titles -->
+    <dimen name="breadcrumb_title_text_size">18dp</dimen>
+    <!-- Text size for breadcrumb subtitles -->
+    <dimen name="breadcrumb_subtitle_text_size">12dp</dimen>
+    <!-- Top margin for breadcrumb subtitles -->
+    <dimen name="breadcrumb_subtitle_top_margin">-2dp</dimen>
+    <!-- Bottom margin for breadcrumb subtitles -->
+    <dimen name="breadcrumb_subtitle_bottom_margin">4dip</dimen>
+    <!-- Text size for breadcrumb dropdown text -->
+    <dimen name="breadcrumb_dropdown_text_size">18dp</dimen>
+
+
     <!-- The default buttom width -->
     <dimen name="default_buttom_width">56dp</dimen>
     <!-- An small buttom width -->

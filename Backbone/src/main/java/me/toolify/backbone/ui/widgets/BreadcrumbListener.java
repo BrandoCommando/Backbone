@@ -16,6 +16,8 @@
 
 package me.toolify.backbone.ui.widgets;
 
+import java.io.File;
+
 /**
  * Interface with events from a breadcrumb.
  */
@@ -25,5 +27,5 @@ public interface BreadcrumbListener {
      *
      * @param item The breadcrumb item click
      */
-    void onBreadcrumbItemClick(BreadcrumbItem item);
+    void onBreadcrumbItemClick(File item);
 }

@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2012 The CyanogenMod Project
  * Copyright (C) 2013 BrandroidTools
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,14 +17,17 @@
 package me.toolify.backbone.ui.widgets;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.Spinner;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ import java.util.Collections;
 import java.util.List;
 
 import me.toolify.backbone.R;
+import me.toolify.backbone.adapters.BreadcrumbSpinnerAdapter;
 import me.toolify.backbone.bus.BusProvider;
 import me.toolify.backbone.bus.events.FilesystemStatusUpdateEvent;
 import me.toolify.backbone.model.DiskUsage;
@@ -46,13 +49,9 @@ import me.toolify.backbone.util.StorageHelper;
 /**
  * A view that holds a navigation breadcrumb pattern.
  */
-public class BreadcrumbView extends RelativeLayout implements Breadcrumb, OnClickListener {
+public class BreadcrumbSpinner extends Spinner implements Breadcrumb, OnItemSelectedListener {
 
-    /**
-     * @hide
-     */
-    HorizontalScrollView mScrollView;
-    private ViewGroup mBreadcrumbBar;
+    private Context mContext;
     /**
      * @hide
      */
@@ -67,31 +66,39 @@ public class BreadcrumbView extends RelativeLayout implements Breadcrumb, OnClic
 
     private List<BreadcrumbListener> mBreadcrumbListeners;
 
+    private BreadcrumbSpinnerAdapter mAdapter;
+
     private String mCurrentPath;
+    /**
+     * @hide
+     */
+    private boolean mPauseSpinnerClicks;
 
     /**
-     * Constructor of <code>BreadcrumbView</code>.
+     * Constructor of <code>BreadcrumbSpinner</code>.
      *
      * @param context The current context
      */
-    public BreadcrumbView(Context context) {
+    public BreadcrumbSpinner(Context context) {
         super(context);
+        this.mContext = context;
         init();
     }
 
     /**
-     * Constructor of <code>BreadcrumbView</code>.
+     * Constructor of <code>BreadcrumbSpinner</code>.
      *
      * @param context The current context
      * @param attrs The attributes of the XML tag that is inflating the view.
      */
-    public BreadcrumbView(Context context, AttributeSet attrs) {
+    public BreadcrumbSpinner(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.mContext = context;
         init();
     }
 
     /**
-     * Constructor of <code>BreadcrumbView</code>.
+     * Constructor of <code>BreadcrumbSpinner</code>.
      *
      * @param context The current context
      * @param attrs The attributes of the XML tag that is inflating the view.
@@ -100,9 +107,21 @@ public class BreadcrumbView extends RelativeLayout implements Breadcrumb, OnClic
      *        either be an attribute resource, whose value will be retrieved
      *        from the current theme, or an explicit style resource.
      */
-    public BreadcrumbView(Context context, AttributeSet attrs, int defStyle) {
+    public BreadcrumbSpinner(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+        this.mContext = context;
         init();
+    }
+
+    /**
+     * This method should always be called by your <code>Activity</code>'s
+     * {@link android.app.Activity#onConfigurationChanged(android.content.res.Configuration) onConfigurationChanged}
+     * method.
+     *
+     * @param newConfig The new configuration
+     */
+    public void onConfigurationChanged(Configuration newConfig) {
+        this.invalidate();
     }
 
     /**
@@ -110,16 +129,14 @@ public class BreadcrumbView extends RelativeLayout implements Breadcrumb, OnClic
      * information and create an appropriate layout for the view
      */
     private void init() {
-        //Initialize the listeners
+        // Spinner selection fires by default
+        mPauseSpinnerClicks = false;
+
+        // Initialize the listeners
         this.mBreadcrumbListeners =
               Collections.synchronizedList(new ArrayList<BreadcrumbListener>());
 
-        //Add the view of the breadcrumb
-        addView(inflate(getContext(), R.layout.breadcrumb_view, null));
-
-        //Recovery all views
-        this.mScrollView = (HorizontalScrollView)findViewById(R.id.breadcrumb_scrollview);
-        this.mBreadcrumbBar = (ViewGroup)findViewById(R.id.breadcrumb);
+        setOnItemSelectedListener(this);
 
         // Change the image of filesystem (this is not called after a changeBreadcrumbPath call,
         // so if need to be theme previously to protect from errors)
@@ -192,46 +209,37 @@ public class BreadcrumbView extends RelativeLayout implements Breadcrumb, OnClic
         //Update the mount point information
         updateMountPointInfo();
 
-        //Remove all views
-        this.mBreadcrumbBar.removeAllViews();
+        ArrayList<File> breadcrumbFiles = new ArrayList<File>();
 
         // The first is always the root (except if we are in a ChRooted environment)
         if (!chRooted) {
-            this.mBreadcrumbBar.addView(createBreadcrumbItem(new File(FileHelper.ROOT_DIRECTORY)));
+            breadcrumbFiles.add(new File(FileHelper.ROOT_DIRECTORY));
         }
 
         //Add the rest of the path
         String[] dirs = newPath.split(File.separator);
         int cc = dirs.length;
         if (chRooted) {
-            boolean first = true;
             for (int i = 1; i < cc; i++) {
                 File f = createFile(dirs, i);
                 if (StorageHelper.isPathInStorageVolume(f.getAbsolutePath())) {
-                    if (!first) {
-                        this.mBreadcrumbBar.addView(createItemDivider());
-                    }
-                    first = false;
-                    this.mBreadcrumbBar.addView(createBreadcrumbItem(f));
+                    breadcrumbFiles.add(f);
                 }
             }
         } else {
             for (int i = 1; i < cc; i++) {
-                this.mBreadcrumbBar.addView(createItemDivider());
-                this.mBreadcrumbBar.addView(createBreadcrumbItem(createFile(dirs, i)));
+                breadcrumbFiles.add(createFile(dirs, i));
             }
         }
 
         // Now apply the theme to the breadcrumb
-        applyTheme();
+        //applyTheme();
 
-        //Set scrollbar at the end
-        this.mScrollView.post(new Runnable() {
-            @Override
-            public void run() {
-                BreadcrumbView.this.mScrollView.fullScroll(View.FOCUS_RIGHT);
-            }
-        });
+        mAdapter = new BreadcrumbSpinnerAdapter(mContext, breadcrumbFiles);
+        this.setAdapter(mAdapter);
+        // Don't perform selection logic for the initial setSelection
+        mPauseSpinnerClicks = true;
+        this.setSelection(breadcrumbFiles.size()-1);
     }
 
     /**
@@ -250,35 +258,6 @@ public class BreadcrumbView extends RelativeLayout implements Breadcrumb, OnClic
     }
 
     /**
-     * Method that creates a new path divider.
-     *
-     * @return View The path divider
-     */
-    private View createItemDivider() {
-        LayoutInflater inflater =
-                (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        return inflater.inflate(R.layout.breadcrumb_item_divider, this.mBreadcrumbBar, false);
-    }
-
-    /**
-     * Method that creates a new split path.
-     *
-     * @param dir The path
-     * @return BreadcrumbItem The view create
-     */
-    private BreadcrumbItem createBreadcrumbItem(File dir) {
-        LayoutInflater inflater =
-                (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        BreadcrumbItem item =
-                (BreadcrumbItem)inflater.inflate(
-                        R.layout.breadcrumb_item, this.mBreadcrumbBar, false);
-        item.setText(dir.getName().length() != 0 ? dir.getName() : dir.getPath());
-        item.setItemPath(dir.getPath());
-        item.setOnClickListener(this);
-        return item;
-    }
-
-    /**
      * Method that creates the a new file reference for a partial
      * breadcrumb item.
      *
@@ -293,18 +272,6 @@ public class BreadcrumbView extends RelativeLayout implements Breadcrumb, OnClic
             parent = new File(parent, dirs[i]);
         }
         return new File(parent, dirs[pos]);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void onClick(View v) {
-        BreadcrumbItem item = (BreadcrumbItem)v;
-        int cc = this.mBreadcrumbListeners.size();
-        for (int i = 0; i < cc; i++) {
-            this.mBreadcrumbListeners.get(i).onBreadcrumbItemClick(item);
-        }
     }
 
     /**
@@ -339,34 +306,19 @@ public class BreadcrumbView extends RelativeLayout implements Breadcrumb, OnClic
         this.mDiskUsageInfo = diskUsageInfo;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public void applyTheme() {
-        Theme theme = ThemeManager.getCurrentTheme(getContext());
-
-        //- Breadcrumb
-        if (this.mBreadcrumbBar != null) {
-            int cc = this.mBreadcrumbBar.getChildCount();
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        if (!mPauseSpinnerClicks) {
+            int cc = this.mBreadcrumbListeners.size();
             for (int i = 0; i < cc; i++) {
-                // There are 2 types: Breadcrumb items and separators
-                View v = this.mBreadcrumbBar.getChildAt(i);
-                if (v instanceof BreadcrumbItem) {
-                    // Breadcrumb item
-                    theme.setTextColor(
-                            getContext(), (BreadcrumbItem)v, "action_bar_text_color"); //$NON-NLS-1$
-                } else if (v instanceof ImageView) {
-                    // Divider drawable
-                    theme.setImageDrawable(
-                            getContext(),
-                            (ImageView)v, "breadcrumb_divider_drawable"); //$NON-NLS-1$
-                }
+                this.mBreadcrumbListeners.get(i).onBreadcrumbItemClick((File) mAdapter.getItem(position));
             }
         }
-        /*if (this.mDiskUsageInfo != null) {
-            Drawable dw = theme.getDrawable(getContext(), "horizontal_progress_bar"); //$NON-NLS-1$
-            this.mDiskUsageInfo.setProgressDrawable(dw);
-        }*/
+        mPauseSpinnerClicks = false;
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }

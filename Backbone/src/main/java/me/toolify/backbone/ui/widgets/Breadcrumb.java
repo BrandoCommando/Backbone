@@ -16,6 +16,7 @@
 
 package me.toolify.backbone.ui.widgets;
 
+import android.content.res.Configuration;
 import android.view.MenuItem;
 
 import me.toolify.backbone.model.DiskUsage;
@@ -25,6 +26,15 @@ import me.toolify.backbone.model.MountPoint;
  * An interface that defines the breadcrumb operations.
  */
 public interface Breadcrumb {
+
+    /**
+     * This method should always be called by your <code>Activity</code>'s
+     * {@link android.app.Activity#onConfigurationChanged(android.content.res.Configuration) onConfigurationChanged}
+     * method.
+     *
+     * @param newConfig The new configuration
+     */
+    public void onConfigurationChanged(Configuration newConfig);
 
     /**
      * Method that initializes the loading of data.
@@ -99,8 +109,4 @@ public interface Breadcrumb {
      */
     void setDiskUsageInfo(DiskUsage diskUsageInfo);
 
-    /**
-     * Method that applies the current theme to the breadcrumb
-     */
-    void applyTheme();
 }

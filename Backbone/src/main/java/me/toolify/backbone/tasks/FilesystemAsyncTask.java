@@ -26,7 +26,7 @@ import me.toolify.backbone.model.DiskUsage;
 import me.toolify.backbone.model.MountPoint;
 import me.toolify.backbone.ui.ThemeManager;
 import me.toolify.backbone.ui.ThemeManager.Theme;
-import me.toolify.backbone.ui.widgets.BreadcrumbView;
+import me.toolify.backbone.ui.widgets.BreadcrumbSpinner;
 import me.toolify.backbone.util.MountPointHelper;
 
 /**
@@ -43,7 +43,7 @@ public class FilesystemAsyncTask extends AsyncTask<String, Integer, Boolean> {
     /**
      * @hide
      */
-    final BreadcrumbView mBreadcrumbView;
+    final BreadcrumbSpinner mBreadcrumbSpinner;
     /**
      * @hide
      */
@@ -59,17 +59,19 @@ public class FilesystemAsyncTask extends AsyncTask<String, Integer, Boolean> {
      * Constructor of <code>FilesystemAsyncTask</code>.
      *
      * @param context The current context
-     * @param breadcrumbView The breadcrumbView calling this task
+     * @param breadcrumbSpinner The breadcrumbSpinner calling this task
      * @param freeDiskSpaceWarningLevel The free disk space warning level
      */
     public FilesystemAsyncTask(
-            Context context, BreadcrumbView breadcrumbView, int freeDiskSpaceWarningLevel) {
+            Context context, BreadcrumbSpinner breadcrumbSpinner, int freeDiskSpaceWarningLevel) {
         super();
         this.mContext = context;
-        this.mBreadcrumbView = breadcrumbView;
+        this.mBreadcrumbSpinner = breadcrumbSpinner;
         this.mFreeDiskSpaceWarningLevel = freeDiskSpaceWarningLevel;
         this.mRunning = false;
     }
+
+
 
     /**
      * Method that returns if there is a task running.
@@ -104,12 +106,12 @@ public class FilesystemAsyncTask extends AsyncTask<String, Integer, Boolean> {
             if (isCancelled()) {
                 return Boolean.TRUE;
             }
-            this.mBreadcrumbView.post(new Runnable() {
+            this.mBreadcrumbSpinner.post(new Runnable() {
                 @Override
                 public void run() {
                     BusProvider.postEvent(new FilesystemStatusUpdateEvent(
                             FilesystemStatusUpdateEvent.INDICATOR_WARNING));
-                    FilesystemAsyncTask.this.mBreadcrumbView.setMountPointInfo(null);
+                    FilesystemAsyncTask.this.mBreadcrumbSpinner.setMountPointInfo(null);
                 }
             });
         } else {
@@ -117,7 +119,7 @@ public class FilesystemAsyncTask extends AsyncTask<String, Integer, Boolean> {
             if (isCancelled()) {
                 return Boolean.TRUE;
             }
-            this.mBreadcrumbView.post(new Runnable() {
+            this.mBreadcrumbSpinner.post(new Runnable() {
                 @Override
                 public void run() {
                    int eventType =
@@ -125,7 +127,7 @@ public class FilesystemAsyncTask extends AsyncTask<String, Integer, Boolean> {
                             ? FilesystemStatusUpdateEvent.INDICATOR_LOCKED
                             : FilesystemStatusUpdateEvent.INDICATOR_UNLOCKED;
                     BusProvider.postEvent(new FilesystemStatusUpdateEvent(eventType));
-                    FilesystemAsyncTask.this.mBreadcrumbView.setMountPointInfo(mp);
+                    FilesystemAsyncTask.this.mBreadcrumbSpinner.setMountPointInfo(mp);
                 }
             });
 
@@ -133,7 +135,7 @@ public class FilesystemAsyncTask extends AsyncTask<String, Integer, Boolean> {
             if (isCancelled()) {
                 return Boolean.TRUE;
             }
-            this.mBreadcrumbView.post(new Runnable() {
+            this.mBreadcrumbSpinner.post(new Runnable() {
                 @Override
                 public void run() {
                     DiskUsage du = null;
@@ -146,13 +148,13 @@ public class FilesystemAsyncTask extends AsyncTask<String, Integer, Boolean> {
                     }
                     int usage = 0;
                     if (du != null && du.getTotal() != 0) {
-                        usage = (int)(du.getUsed() * 100 / du.getTotal());
+                        usage = (int) (du.getUsed() * 100 / du.getTotal());
                         //FilesystemAsyncTask.this.fileSystemInfo.setProgress(usage);  ** CM progress bar removed
-                        FilesystemAsyncTask.this.mBreadcrumbView.setDiskUsageInfo(du);
+                        FilesystemAsyncTask.this.mBreadcrumbSpinner.setDiskUsageInfo(du);
                     } else {
                         usage = du == null ? 0 : 100;
                         //FilesystemAsyncTask.this.fileSystemInfo.setProgress(usage); ** CM progress bar removed
-                        FilesystemAsyncTask.this.mBreadcrumbView.setDiskUsageInfo(null);
+                        FilesystemAsyncTask.this.mBreadcrumbSpinner.setDiskUsageInfo(null);
                     }
 
                     //TODO point this at another view in the action bar, now that diskusage is gone

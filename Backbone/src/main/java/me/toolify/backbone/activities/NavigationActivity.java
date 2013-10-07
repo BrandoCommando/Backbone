@@ -524,6 +524,7 @@ public class NavigationActivity extends AbstractNavigationActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
+        mBreadcrumb.onConfigurationChanged(newConfig);
     }
 
     /**
@@ -1153,8 +1154,8 @@ public class NavigationActivity extends AbstractNavigationActivity
      * {@inheritDoc}
      */
     @Override
-    public void onBreadcrumbItemClick(BreadcrumbItem item) {
-        getCurrentNavigationFragment().changeCurrentDir(item.getItemPath());
+    public void onBreadcrumbItemClick(File item) {
+        getCurrentNavigationFragment().changeCurrentDir(item.getAbsolutePath());
     }
 
     /**

@@ -697,8 +697,8 @@ public class PickerActivity extends AbstractNavigationActivity
      * {@inheritDoc}
      */
     @Override
-    public void onBreadcrumbItemClick(BreadcrumbItem item) {
-        this.mNavigationFragment.changeCurrentDir(item.getItemPath());
+    public void onBreadcrumbItemClick(File item) {
+        this.mNavigationFragment.changeCurrentDir(item.getAbsolutePath());
     }
 
     /**

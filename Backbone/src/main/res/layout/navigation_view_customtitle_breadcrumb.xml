@@ -19,9 +19,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <me.toolify.backbone.ui.widgets.BreadcrumbView
+    <me.toolify.backbone.ui.widgets.BreadcrumbSpinner
             android:id="@+id/breadcrumb_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            style="@style/DropDownNav.Holo_dark"/>
 
 </RelativeLayout>

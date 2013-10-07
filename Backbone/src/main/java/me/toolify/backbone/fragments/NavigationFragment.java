@@ -1724,10 +1724,6 @@ public class NavigationFragment extends Fragment implements
      * Method that applies the current theme to the activity
      */
     public void applyTheme() {
-        //- Breadcrumb
-        if (getBreadcrumb() != null) {
-            getBreadcrumb().applyTheme();
-        }
 
         //- Redraw the adapter view
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme(mActivity);

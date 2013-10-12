@@ -20,11 +20,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,24 +40,36 @@ public class BreadcrumbSpinnerAdapter extends BaseAdapter implements SpinnerAdap
         this.fileList = fileList;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int getCount() {
         return fileList.size();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Object getItem(int position) {
         return fileList.get(position);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public long getItemId(int position) {
         return position;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LinearLayout row = (LinearLayout) View.inflate(mContext, R.layout.breadcrumb_spinner_selected_item, null);
+        RelativeLayout row = (RelativeLayout) View.inflate(mContext, R.layout.breadcrumb_spinner_selected_item, null);
         TextView title = (TextView)row.findViewById(R.id.breadcrumb_spinner_item_title);
         TextView subtitle = (TextView)row.findViewById(R.id.breadcrumb_spinner_item_subtitle);
         title.setText(fileList.get(position).getName());
@@ -67,6 +77,9 @@ public class BreadcrumbSpinnerAdapter extends BaseAdapter implements SpinnerAdap
         return row;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent) {
         TextView textView = (TextView) View.inflate(mContext, R.layout.breadcrumb_spinner_dropdown_item, null);

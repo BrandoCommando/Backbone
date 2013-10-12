@@ -19,7 +19,7 @@
         xmlns:filemanager="http://schemas.android.com/apk/res/com.brandroidtools.filemanager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_background"
+        android:background="?attr/defaultBackground"
         android:orientation="vertical">
 
     <!-- Breadcrumb -->

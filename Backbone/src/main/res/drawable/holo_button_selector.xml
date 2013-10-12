@@ -25,6 +25,6 @@
             android:state_enabled="true"
             android:state_focused="true"/>
     <item
-            android:drawable="@color/default_background"/>
+            android:drawable="?attr/defaultBackground"/>
 
 </selector>

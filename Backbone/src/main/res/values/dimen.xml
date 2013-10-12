@@ -67,19 +67,17 @@
     <!-- The minimal margin -->
     <dimen name="min_margin">1dp</dimen>
 
-    <!-- The breadcrumb item margin space -->
-    <dimen name="breadcrumb_item_margin_space">3dp</dimen>
-    <!-- The breadcrumb item minimal size -->
-    <dimen name="breadcrumb_item_min_size">32dp</dimen>
+    <!-- Minimum width of the breadcrumb -->
+    <dimen name="breadcrumb_min_width">100dp</dimen>
 
     <!-- Text size for breadcrumb titles -->
-    <dimen name="breadcrumb_title_text_size">18dp</dimen>
+    <dimen name="breadcrumb_title_text_size">18sp</dimen>
     <!-- Text size for breadcrumb subtitles -->
-    <dimen name="breadcrumb_subtitle_text_size">12dp</dimen>
+    <dimen name="breadcrumb_subtitle_text_size">12sp</dimen>
     <!-- Top margin for breadcrumb subtitles -->
-    <dimen name="breadcrumb_subtitle_top_margin">-2dp</dimen>
+    <dimen name="breadcrumb_title_top_margin">-2dp</dimen>
     <!-- Bottom margin for breadcrumb subtitles -->
-    <dimen name="breadcrumb_subtitle_bottom_margin">4dip</dimen>
+    <dimen name="breadcrumb_subtitle_top_margin">-4dip</dimen>
     <!-- Text size for breadcrumb dropdown text -->
     <dimen name="breadcrumb_dropdown_text_size">18dp</dimen>
 

@@ -28,15 +28,6 @@ import me.toolify.backbone.model.MountPoint;
 public interface Breadcrumb {
 
     /**
-     * This method should always be called by your <code>Activity</code>'s
-     * {@link android.app.Activity#onConfigurationChanged(android.content.res.Configuration) onConfigurationChanged}
-     * method.
-     *
-     * @param newConfig The new configuration
-     */
-    public void onConfigurationChanged(Configuration newConfig);
-
-    /**
      * Method that initializes the loading of data.
      */
     void startLoading();

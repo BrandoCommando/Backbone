@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-/* //device/apps/common/assets/res/any/dimens.xml
+/* //device/apps/common/assets/res/any/dimen.xml
 **
 ** Copyright 2006, The Android Open Source Project
 **
@@ -19,14 +19,17 @@
 -->
 <resources>
 
+    <!-- Minimum width of the breadcrumb -->
+    <dimen name="breadcrumb_min_width">130dp</dimen>
+
     <!-- Text size for breadcrumb titles -->
-    <dimen name="breadcrumb_title_text_size">14dp</dimen>
+    <dimen name="breadcrumb_title_text_size">22sp</dimen>
     <!-- Text size for breadcrumb subtitles -->
-    <dimen name="breadcrumb_subtitle_text_size">10dp</dimen>
+    <dimen name="breadcrumb_subtitle_text_size">12sp</dimen>
     <!-- Top margin for breadcrumb subtitles -->
-    <dimen name="breadcrumb_subtitle_top_margin">-2dp</dimen>
+    <dimen name="breadcrumb_title_top_margin">-2dp</dimen>
     <!-- Bottom margin for breadcrumb subtitles -->
-    <dimen name="breadcrumb_subtitle_bottom_margin">4dip</dimen>
+    <dimen name="breadcrumb_subtitle_top_margin">-4dip</dimen>
     <!-- Text size for breadcrumb dropdown text -->
     <dimen name="breadcrumb_dropdown_text_size">18dp</dimen>
 

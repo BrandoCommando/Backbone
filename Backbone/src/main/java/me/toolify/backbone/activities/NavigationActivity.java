@@ -524,7 +524,9 @@ public class NavigationActivity extends AbstractNavigationActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-        mBreadcrumb.onConfigurationChanged(newConfig);
+        if (mBreadcrumb != null) {
+            mBreadcrumb.changeBreadcrumbPath(getCurrentNavigationFragment().getCurrentDir(), mChRooted);
+        }
     }
 
     /**

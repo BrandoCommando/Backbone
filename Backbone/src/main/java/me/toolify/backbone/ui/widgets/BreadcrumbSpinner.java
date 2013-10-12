@@ -114,17 +114,6 @@ public class BreadcrumbSpinner extends Spinner implements Breadcrumb, OnItemSele
     }
 
     /**
-     * This method should always be called by your <code>Activity</code>'s
-     * {@link android.app.Activity#onConfigurationChanged(android.content.res.Configuration) onConfigurationChanged}
-     * method.
-     *
-     * @param newConfig The new configuration
-     */
-    public void onConfigurationChanged(Configuration newConfig) {
-        this.invalidate();
-    }
-
-    /**
      * Method that initializes the view. This method loads all the necessary
      * information and create an appropriate layout for the view
      */

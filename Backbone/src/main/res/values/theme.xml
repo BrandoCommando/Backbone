@@ -35,8 +35,14 @@
         <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_holo_dark</item>
         <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Holo_dark</item>
 
+
         <!-- Light.DarkActionBar specific -->
         <item name="android:actionBarWidgetTheme">@style/Theme.Holo_dark.Widget</item>
+
+        <!-- App colors -->
+        <item name="defaultBackground">@color/white</item>
+        <item name="breadcrumbTitleTextColor">@color/white</item>
+        <item name="breadcrumbSubtitleTextColor">@color/white30</item>
 
         <!-- Action item icons -->
         <item name="actionIconFolderProperties">@drawable/ic_action_holo_dark_properties</item>
@@ -161,11 +167,11 @@
     <!-- The text color of TextView controls -->
     <color name="text_color">@color/black_transparent</color>
     <!-- The text color of Action Bar text -->
-    <color name="action_bar_text_color">@color/white_transparent</color>
+    <color name="action_bar_text_color">@color/white80</color>
     <!-- The text color of Dialog -->
     <color name="dialog_text_color">@android:color/holo_blue_dark</color>
     <!-- The text color of Nav Drawer text -->
-    <color name="nav_drawer_text_color">@color/white_transparent</color>
+    <color name="nav_drawer_text_color">@color/white80</color>
 
     <!-- The highlight color for terms found in the search result -->
     <color name="search_highlight_color">@color/search_highlight</color>

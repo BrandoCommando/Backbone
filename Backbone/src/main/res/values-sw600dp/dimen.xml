@@ -29,7 +29,5 @@
     <dimen name="breadcrumb_subtitle_top_margin">-4dip</dimen>
     <!-- Text size for breadcrumb dropdown text -->
     <dimen name="breadcrumb_dropdown_text_size">18dp</dimen>
-    <!-- Max width for breadcrumb dropdown -->
-    <dimen name="breadcrumb_dropdown_max_width">600dp</dimen>
 
 </resources>

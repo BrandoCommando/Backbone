@@ -17,7 +17,4 @@
 <resources>
     <!-- The Properties Drawer (right) width. Full width on large-port -->
     <dimen name="properties_drawer_width">360dp</dimen>
-
-    <!-- Max width for breadcrumb dropdown -->
-    <dimen name="breadcrumb_dropdown_max_width">235dp</dimen>
 </resources>

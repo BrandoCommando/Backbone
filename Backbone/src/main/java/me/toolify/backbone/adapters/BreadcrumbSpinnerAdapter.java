@@ -72,7 +72,7 @@ public class BreadcrumbSpinnerAdapter extends BaseAdapter implements SpinnerAdap
         RelativeLayout row = (RelativeLayout) View.inflate(mContext, R.layout.breadcrumb_spinner_selected_item, null);
         TextView title = (TextView)row.findViewById(R.id.breadcrumb_spinner_item_title);
         TextView subtitle = (TextView)row.findViewById(R.id.breadcrumb_spinner_item_subtitle);
-        title.setText(fileList.get(position).getName());
+        title.setText(buildTitleString(fileList.get(position)));
         subtitle.setText(buildSubtitleString(fileList.get(position)));
         return row;
     }
@@ -100,7 +100,7 @@ public class BreadcrumbSpinnerAdapter extends BaseAdapter implements SpinnerAdap
     private String buildSubtitleString(File file) {
         String fileString;
         if (file.compareTo(new File(FileHelper.ROOT_DIRECTORY)) == 0){
-            fileString = "\"Filesystem Root\"";
+            fileString = "Filesystem Root";
         } else {
             fileString = file.getParent();
         }

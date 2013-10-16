@@ -20,17 +20,19 @@
 <resources>
 
     <!-- Minimum width of the breadcrumb -->
-    <dimen name="breadcrumb_min_width">130dp</dimen>
+    <dimen name="breadcrumb_min_width">150dp</dimen>
 
     <!-- Text size for breadcrumb titles -->
-    <dimen name="breadcrumb_title_text_size">22sp</dimen>
+    <dimen name="breadcrumb_title_text_size">24sp</dimen>
     <!-- Text size for breadcrumb subtitles -->
-    <dimen name="breadcrumb_subtitle_text_size">12sp</dimen>
+    <dimen name="breadcrumb_subtitle_text_size">14sp</dimen>
     <!-- Top margin for breadcrumb subtitles -->
     <dimen name="breadcrumb_title_top_margin">-2dp</dimen>
     <!-- Bottom margin for breadcrumb subtitles -->
     <dimen name="breadcrumb_subtitle_top_margin">-4dip</dimen>
     <!-- Text size for breadcrumb dropdown text -->
     <dimen name="breadcrumb_dropdown_text_size">18dp</dimen>
+    <!-- Max width for breadcrumb dropdown -->
+    <dimen name="breadcrumb_dropdown_max_width">600dp</dimen>
 
 </resources>

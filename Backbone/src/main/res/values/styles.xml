@@ -42,6 +42,7 @@
 
     <style name="DropDownListView.Holo_dark" parent="@android:style/Widget.Holo.ListView.DropDown">
         <item name="android:listSelector">@drawable/selectable_background_holo_dark</item>
+        <item name="android:divider">@drawable/list_divider_holo_dark</item>
     </style>
 
     <!-- Action bar -->
@@ -238,6 +239,9 @@
         <item name="android:textSize">@dimen/breadcrumb_dropdown_text_size</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:minHeight">48dp</item>
+        <item name="android:maxWidth">@dimen/breadcrumb_dropdown_max_width</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <!-- Breadcrumb ActionBar Button -->

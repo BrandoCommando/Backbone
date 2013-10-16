@@ -323,24 +323,6 @@ public class PickerActivity extends AbstractNavigationActivity
         mFilesystemInfoRefreshing = (ProgressBar)this.mRootView.findViewById(
                 R.id.button_filesystem_info_refreshing);
 
-        final File initialDir = getInitialDirectoryFromIntent(getIntent());
-        final String rootDirectory;
-
-        if (initialDir != null) {
-            rootDirectory = initialDir.getAbsolutePath();
-        } else {
-            rootDirectory = FileHelper.ROOT_DIRECTORY;
-        }
-
-        this.mHandler = new Handler();
-        this.mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                // Navigate to. The navigation view will redirect to the appropriate directory
-                PickerActivity.this.mNavigationFragment.changeCurrentDir(rootDirectory);
-            }
-        });
-
     }
 
     /**
@@ -471,32 +453,6 @@ public class PickerActivity extends AbstractNavigationActivity
         }
 
         return false;
-    }
-
-    private static File getInitialDirectoryFromIntent(Intent intent) {
-        if (!Intent.ACTION_PICK.equals(intent.getAction())) {
-            return null;
-        }
-
-        final Uri data = intent.getData();
-        if (data == null) {
-            return null;
-        }
-
-        final String path = data.getPath();
-        if (path == null) {
-            return null;
-        }
-
-        final File file = new File(path);
-        if (!file.exists() || !file.isAbsolute()) {
-            return null;
-        }
-
-        if (file.isDirectory()) {
-            return file;
-        }
-        return file.getParentFile();
     }
 
     private static Uri getResultUriForFileFromIntent(File src, Intent intent) {
@@ -708,9 +664,6 @@ public class PickerActivity extends AbstractNavigationActivity
     void applyTheme() {
         Theme theme = ThemeManager.getCurrentTheme(this);
         theme.setBaseTheme(this, true);
-
-        // View
-        theme.setBackgroundDrawable(this, this.mRootView, "background_drawable"); //$NON-NLS-1$
         this.mNavigationFragment.applyTheme();
     }
 }

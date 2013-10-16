@@ -40,7 +40,6 @@
         <item name="android:actionBarWidgetTheme">@style/Theme.Holo_dark.Widget</item>
 
         <!-- App colors -->
-        <item name="defaultBackground">@color/white</item>
         <item name="breadcrumbTitleTextColor">@color/white</item>
         <item name="breadcrumbSubtitleTextColor">@color/white30</item>
 

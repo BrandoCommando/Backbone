@@ -45,9 +45,8 @@
 
     <!-- Main application styleables -->
     <declare-styleable name="FileManager">
-        <attr name="defaultBackground" format="reference"/>
-        <attr name="breadcrumbTitleTextColor" format="reference"/>
-        <attr name="breadcrumbSubtitleTextColor" format="reference"/>
+        <attr name="breadcrumbTitleTextColor" format="color"/>
+        <attr name="breadcrumbSubtitleTextColor" format="color"/>
 
         <attr name="actionIconFolderProperties" format="reference"/>
         <attr name="actionIconRefresh" format="reference"/>

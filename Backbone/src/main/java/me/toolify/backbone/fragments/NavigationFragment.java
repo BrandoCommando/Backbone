@@ -26,6 +26,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Bundle;
@@ -41,7 +42,6 @@ import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import me.toolify.backbone.FileManagerApplication;
@@ -516,12 +516,32 @@ public class NavigationFragment extends Fragment implements
                         (String)FileManagerSettings.
                                 SETTINGS_INITIAL_DIR.getDefaultValue());
 
-        // Check if request navigation to directory (use as default), and
-        // ensure chrooted and absolute path
+        // Override the user-defined initial directory if an intent with an EXTRA_NAVIGATE_TO from
+        // a ShortcutActivity or an ACTION_PICK from a PickerActivity is present.  Ensure proper
+        // hanlding of chroot and absolute path.
         if (intent != null) {
+            // EXTRA_NAVIGATE_TO from ShortcutActivity
             String navigateTo = intent.getStringExtra(NavigationActivity.EXTRA_NAVIGATE_TO);
             if (navigateTo != null && navigateTo.length() > 0) {
                 initialDir = navigateTo;
+            }
+            // ACTION_PICK passed to PickerActivity from an external file select intent
+            if (Intent.ACTION_PICK.equals(intent.getAction())) {
+
+                final Uri data = intent.getData();
+                if (data != null) {
+                    final String path = data.getPath();
+                    if(path != null) {
+                        final File file = new File(path);
+                        if (file.exists() || file.isAbsolute()) {
+                            if (file.isDirectory()) {
+                                initialDir = file.getAbsolutePath();
+                            } else {
+                                initialDir = file.getParentFile().getAbsolutePath();
+                            }
+                        }
+                    }
+                }
             }
         }
 

@@ -24,7 +24,8 @@
             android:drawable="@android:color/holo_blue_dark"
             android:state_enabled="true"
             android:state_focused="true"/>
+    <!-- Default background.  Defined this way because state lists cannot contain ?attr values -->
     <item
-            android:drawable="?attr/defaultBackground"/>
+            android:drawable="@color/white"/>
 
 </selector>

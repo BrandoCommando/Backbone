@@ -16,9 +16,7 @@
 
 package me.toolify.backbone.ui.widgets;
 
-import android.content.res.Configuration;
-import android.view.MenuItem;
-
+import me.toolify.backbone.fragments.NavigationFragment;
 import me.toolify.backbone.model.DiskUsage;
 import me.toolify.backbone.model.MountPoint;
 
@@ -100,4 +98,11 @@ public interface Breadcrumb {
      */
     void setDiskUsageInfo(DiskUsage diskUsageInfo);
 
+    /**
+     * Method that associates the supplied {@link me.toolify.backbone.fragments.NavigationFragment}
+     * with this breadcrumb
+     *
+     * @param fragment the fragment to associate with this breadcrumb
+     */
+    void setNavigationFragment(NavigationFragment fragment);
 }

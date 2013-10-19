@@ -108,6 +108,8 @@ import me.toolify.backbone.ui.policy.NewActionPolicy;
 import me.toolify.backbone.ui.widgets.BookmarksListView;
 import me.toolify.backbone.ui.widgets.Breadcrumb;
 import me.toolify.backbone.ui.widgets.BreadcrumbItem;
+import me.toolify.backbone.ui.widgets.BreadcrumbPager;
+import me.toolify.backbone.ui.widgets.BreadcrumbSpinner;
 import me.toolify.backbone.ui.widgets.FsoPropertiesView;
 import me.toolify.backbone.ui.widgets.NavigationCustomTitleView;
 import me.toolify.backbone.util.CommandHelper;
@@ -320,16 +322,17 @@ public class NavigationActivity extends AbstractNavigationActivity
     private NavigationCustomTitleView mTitle;
     private Breadcrumb mBreadcrumb;
 
+    /**
+     * @hide
+     */
+    private BreadcrumbPager mBreadcrumbPager;
     public NavigationFragmentPagerAdapter mPagerAdapter;
     public ViewPager mViewPager;
 
     private boolean mExitFlag = false;
     private long mExitBackTimeout = -1;
 
-    /**
-     * @hide
-     */
-    boolean mChRooted;
+    public boolean mChRooted;
 
     /**
      * @hide
@@ -395,8 +398,8 @@ public class NavigationActivity extends AbstractNavigationActivity
         
         //Initialize activity console
         init();
-        
-        //Initialize viewPager
+
+        //Initialize viewPager after the action bar
         initViewPager();
 
         //Initialize action bar
@@ -411,8 +414,8 @@ public class NavigationActivity extends AbstractNavigationActivity
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 // Reload the fragments current dir into the breadcrumb
-                if (mBreadcrumb != null) {
-                    mBreadcrumb.changeBreadcrumbPath(getCurrentNavigationFragment().getCurrentDir(), mChRooted);
+                if (getCurrentBreadcrumb() != null) {
+                    getCurrentBreadcrumb().changeBreadcrumbPath(getCurrentNavigationFragment().getCurrentDir(), mChRooted);
                 }
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
 
@@ -480,7 +483,11 @@ public class NavigationActivity extends AbstractNavigationActivity
     @Override
     protected void onResume() {
         super.onResume();
-        mViewPager.setOnPageChangeListener(this);
+        mBreadcrumbPager.setViewPager(mViewPager);
+        //mBreadcrumbPager.setOnPageChangeListener(this);
+
+//        mSlidingStrip.setViewPager(mViewPager);
+//        mSlidingStrip.setOnPageChangeListener(this);
 
         // Register ourselves so that we can provide the initial value.
         BusProvider.register(this);
@@ -524,9 +531,7 @@ public class NavigationActivity extends AbstractNavigationActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         mDrawerToggle.onConfigurationChanged(newConfig);
-        if (mBreadcrumb != null) {
-            mBreadcrumb.changeBreadcrumbPath(getCurrentNavigationFragment().getCurrentDir(), mChRooted);
-        }
+        mBreadcrumbPager.refreshLayout();
     }
 
     /**
@@ -538,14 +543,27 @@ public class NavigationActivity extends AbstractNavigationActivity
         return mPagerAdapter.getFragment(mViewPager, mViewPager.getCurrentItem());
     }
 
+
     /**
-     * Method that returns the requested navigation view.
+     * Method that returns the current breadcrumb view.
      *
-     * @param fragmentNum The fragment to return
-     * @return NavigationFragment The requested navigation view
+     * @return BreadcrumbSpinner The current breadcrumb view
      */
-    public NavigationFragment getNavigationFragment(int fragmentNum) {
-        return mPagerAdapter.getFragment(mViewPager, fragmentNum);
+    public BreadcrumbSpinner getCurrentBreadcrumb() {
+        return mBreadcrumbPager.getBreadcrumb(mViewPager.getCurrentItem());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void pairBreadcrumb(int position, NavigationFragment fragment) {
+        try {
+            fragment.setBreadcrumb(mBreadcrumbPager.getBreadcrumb(position));
+        } catch (Throwable ex) {
+            Log.e(TAG,
+                    String.format("Failed to pair breadcrumb %d", //$NON-NLS-1$
+                            position, ex));
+        }
     }
 
     /**
@@ -618,7 +636,7 @@ public class NavigationActivity extends AbstractNavigationActivity
         mViewPager = (ViewPager)findViewById(R.id.navigation_pager);
 
         // Plug the ViewPager into the Pager Adapter and set the number of pages
-        mPagerAdapter = new NavigationFragmentPagerAdapter(this, getFragmentManager(), 2);
+        mPagerAdapter = new NavigationFragmentPagerAdapter(this, getFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setHorizontalScrollBarEnabled(true);
 
@@ -636,6 +654,8 @@ public class NavigationActivity extends AbstractNavigationActivity
                 R.layout.navigation_view_customtitle, null, false);
         mTitle = (NavigationCustomTitleView)mTitleLayout.findViewById(R.id.navigation_title_flipper);
         mBreadcrumb = (Breadcrumb)mTitle.findViewById(R.id.breadcrumb_view);
+        //mSlidingStrip = (PagerSlidingTabStrip)mTitleLayout.findViewById(R.id.breadcrumb_sliding_strip);
+        mBreadcrumbPager = (BreadcrumbPager)mTitleLayout.findViewById(R.id.breadcrumb_pager);
 
         // Set the free disk space warning level of the breadcrumb widget
         String fds = Preferences.getSharedPreferences().getString(
@@ -655,10 +675,8 @@ public class NavigationActivity extends AbstractNavigationActivity
 
         NavigationFragment navigationFragment = getCurrentNavigationFragment();
         mTitle.setOnHistoryListener(navigationFragment);
-        navigationFragment.setBreadcrumb(mBreadcrumb);
         navigationFragment.setOnHistoryListener(navigationFragment);
         navigationFragment.setOnNavigationOnRequestMenuListener(this);
-        navigationFragment.setCustomTitle(mTitle);
     }
 
     /**
@@ -1264,13 +1282,6 @@ public class NavigationActivity extends AbstractNavigationActivity
         // We need a basic structure to check this
         if (getCurrentNavigationFragment() == null) return false;
 
-        //Check if the configuration view is showing. In this case back
-        //action must be "close configuration"
-        if (getCurrentNavigationFragment().getCustomTitle().isConfigurationViewShowing()) {
-            getCurrentNavigationFragment().getCustomTitle().restoreView();
-            return true;
-        }
-
         //Do back operation over the navigation history
         boolean flag = this.mExitFlag;
 
@@ -1700,8 +1711,7 @@ public class NavigationActivity extends AbstractNavigationActivity
      * elements that are contextually based on the currently selected page, we
      * need to trigger UI updates after the user swipes to a new page. The pager
      * is contained within the main activity, but the relevant data must be
-     * pushed from the currently selected list fragment. Therefore, the changeBreadcrumbPath
-     * method is called so that the fragment's current dir can be reflected in the breadcrumbs.
+     * pushed from the currently selected list fragment.
      *
      * @param position the integer index of the currently selected page
      * @return nothing
@@ -1709,17 +1719,10 @@ public class NavigationActivity extends AbstractNavigationActivity
     @Override
     public void onPageSelected(int position) {
 
-    	// Load the new fragments current dir into the breadcrumb
-        if (this.mBreadcrumb != null) {
-            this.mBreadcrumb.changeBreadcrumbPath(getCurrentNavigationFragment().getCurrentDir(), this.mChRooted);
-        }
-
         // Tell the breadcrumb that the new fragment will now be the one sending dir changes
         NavigationFragment navigationFragment = getCurrentNavigationFragment();
-        navigationFragment.setBreadcrumb(mBreadcrumb);
         navigationFragment.setOnHistoryListener(navigationFragment);
         navigationFragment.setOnNavigationOnRequestMenuListener(this);
-        navigationFragment.setCustomTitle(mTitle);
     }
 
     /**

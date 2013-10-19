@@ -27,6 +27,8 @@ import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
+import me.toolify.backbone.FileManagerApplication;
 import me.toolify.backbone.fragments.NavigationFragment;
 
 /**
@@ -46,9 +48,9 @@ public class NavigationFragmentPagerAdapter extends PagerAdapter {
 
     private int mNumPages;
 
-    public NavigationFragmentPagerAdapter(Context context, FragmentManager fm, int numPages) {
+    public NavigationFragmentPagerAdapter(Context context, FragmentManager fm) {
         mFragmentManager = fm;
-        this.mNumPages = numPages;
+        this.mNumPages = FileManagerApplication.NUM_PAGES;
     }
 
     /**
@@ -199,5 +201,13 @@ public class NavigationFragmentPagerAdapter extends PagerAdapter {
 
     private static String makeFragmentName(int viewId, int index) {
         return "android:switcher:" + viewId + ":" + index;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public CharSequence getPageTitle(int position) {
+        return "Fragment" + position;
     }
 }

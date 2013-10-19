@@ -20,10 +20,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+    <me.toolify.backbone.ui.widgets.BreadcrumbPager
+        android:id="@+id/breadcrumb_pager"
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        />
+
     <me.toolify.backbone.ui.widgets.BreadcrumbSpinner
-            android:id="@+id/breadcrumb_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            style="@style/DropDownNav.Holo_dark"/>
+        android:id="@+id/breadcrumb_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        style="@style/DropDownNav.Holo_dark"
+        android:visibility="gone"/>
 
 </RelativeLayout>

@@ -73,4 +73,7 @@
     <!-- Action bar colors -->
     <color name="pressed_holo_dark">#CC33B5E5</color>
 
+    <!-- A holdover from PagerSlidingStrip integration.  Remove when possible -->
+    <color name="background_tab_pressed">#6633B5E5</color>
+
 </resources>

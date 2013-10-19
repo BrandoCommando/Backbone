@@ -71,6 +71,8 @@ public final class FileManagerApplication extends Application {
     private static boolean sIsDebuggable = false;
     private static boolean sIsDeviceRooted = false;
 
+    public static int NUM_PAGES = 2;
+
     private final BroadcastReceiver mNotificationReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {

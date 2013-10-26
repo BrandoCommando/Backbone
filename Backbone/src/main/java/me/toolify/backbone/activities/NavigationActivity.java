@@ -558,7 +558,14 @@ public class NavigationActivity extends AbstractNavigationActivity
      */
     public void pairBreadcrumb(int position, NavigationFragment fragment) {
         try {
-            fragment.setBreadcrumb(mBreadcrumbPager.getBreadcrumb(position));
+            Breadcrumb b = mBreadcrumbPager.getBreadcrumb(position);
+            if (b != null) {
+                // Breadcrumb has already been loaded into the breadcrumb pager
+                fragment.setBreadcrumb(mBreadcrumbPager.getBreadcrumb(position));
+            } else {
+                // Otherwise it hasn't yet, so lets queue it up
+                mBreadcrumbPager.queuePairFragment(position, fragment);
+            }
         } catch (Throwable ex) {
             Log.e(TAG,
                     String.format("Failed to pair breadcrumb %d", //$NON-NLS-1$

@@ -53,9 +53,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 import me.toolify.backbone.FileManagerApplication;
 import me.toolify.backbone.R;
+import me.toolify.backbone.fragments.NavigationFragment;
 
 /**
  * Layout manager that allows the user to flip left and right
@@ -130,6 +132,7 @@ public class BreadcrumbPager extends ViewGroup {
 
     private final ArrayList<ItemInfo> mItems = new ArrayList<ItemInfo>();
     private final ItemInfo mTempItem = new ItemInfo();
+    private HashMap<Integer, NavigationFragment> mQueuedFragments = new HashMap<Integer, NavigationFragment>();
 
     private Paint rectPaint;
     private Paint dividerPaint;
@@ -307,6 +310,11 @@ public class BreadcrumbPager extends ViewGroup {
         setAdapter(new BreadcrumbPagerAdapter(mContext));
     }
 
+    /**
+     * Method that associates this breadcrumb pager with the target external viewPager
+     *
+     * @param pager
+     */
     public void setViewPager(ViewPager pager) {
         this.pager = pager;
 
@@ -315,6 +323,18 @@ public class BreadcrumbPager extends ViewGroup {
         }
 
         pager.setOnPageChangeListener(pageListener);
+    }
+
+    /**
+     * Method that queues a fragment/breadcrumb association, because the related
+     * {@link me.toolify.backbone.fragments.NavigationFragment} loaded before we could create the
+     * corresponding breadcrumb view in the breadcrumbPager.
+     *
+     * @param position the position of the fragment in its own viewPager
+     * @param fragment the fragment to be queued for pairing
+     */
+    public void queuePairFragment(int position, NavigationFragment fragment) {
+        mQueuedFragments.put(position, fragment);
     }
 
     @Override
@@ -2131,6 +2151,12 @@ public class BreadcrumbPager extends ViewGroup {
             View view = getView(position, pager);
 
             pager.addView(view);
+
+            // Check to see if a fragment/breadcrumb has been queued (when the fragment loads before
+            // the corresponding breadcrumb does.
+            if (mQueuedFragments.containsKey(position)) {
+                mQueuedFragments.get(position).setBreadcrumb((Breadcrumb) view);
+            }
 
             return view;
         }

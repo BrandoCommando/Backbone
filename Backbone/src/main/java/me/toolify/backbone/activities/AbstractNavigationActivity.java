@@ -20,6 +20,7 @@ import android.app.Activity;
 
 import me.toolify.backbone.FileManagerApplication;
 import me.toolify.backbone.console.ConsoleBuilder;
+import me.toolify.backbone.fragments.NavigationFragment;
 import me.toolify.backbone.ui.widgets.BreadcrumbListener;
 
 public abstract class AbstractNavigationActivity extends Activity
@@ -67,4 +68,14 @@ public abstract class AbstractNavigationActivity extends Activity
         }
         finish();
     }
+
+    /**
+     * Method that associates a breadcrumb with a {@link me.toolify.backbone.fragments.NavigationFragment}
+     * based on their shared position.  This method does not create breadcrumbs, so it should throw
+     * an exception if a breadcrumb with the specified position does not exist.
+     *
+     * @param mPosition the position of the fragment
+     * @param fragment the fragment recieving the breadcrumb association
+     */
+    public abstract void pairBreadcrumb(int mPosition, NavigationFragment fragment);
 }

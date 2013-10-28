@@ -184,6 +184,7 @@ public class NavigationFragment extends Fragment implements
     };
 
     private int mId;
+    private int mPosition;
     private String mCurrentDir;
     private NavigationLayoutMode mCurrentMode;
     /**
@@ -206,7 +207,7 @@ public class NavigationFragment extends Fragment implements
     private OnFilePickedListener mOnFilePickedListener;
     private OnDirectoryChangedListener mOnDirectoryChangedListener;
 
-    private boolean mChRooted;
+    public boolean mChRooted;
 
     private NAVIGATION_MODE mNavigationMode;
 
@@ -254,10 +255,33 @@ public class NavigationFragment extends Fragment implements
      */
     Handler mHandler;
 
+    /**
+     * Create a new instance of FileListFragment, providing "num" as an
+     * argument.
+     */
+    public static NavigationFragment newInstance(int num) {
+        NavigationFragment f = new NavigationFragment();
+
+        // Supply num input as an argument.
+        Bundle args = new Bundle();
+        args.putInt("position", num);
+        f.setArguments(args);
+        return f;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = (AbstractNavigationActivity)getActivity();
+        Bundle b = getArguments();
+        if (b != null) {
+            mPosition = getArguments().getInt("position", 0);
+        } else {
+            mPosition = 0;
+        }
 
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.navigation_row_height);
 
@@ -391,20 +415,6 @@ public class NavigationFragment extends Fragment implements
     }
 
     /**
-     * Create a new instance of FileListFragment, providing "num" as an
-     * argument.
-     */
-    public static NavigationFragment newInstance(int num) {
-        NavigationFragment f = new NavigationFragment();
-
-        // Supply num input as an argument.
-        Bundle args = new Bundle();
-        args.putInt("num", num);
-        f.setArguments(args);
-        return f;
-    }
-
-    /**
      * Method that initializes the navigation views of the activity
      */
     private void initNavigationViewContainer() {
@@ -440,6 +450,10 @@ public class NavigationFragment extends Fragment implements
 
         //Initialize variables
         this.mFiles = new ArrayList<FileSystemObject>();
+
+
+        // Associate the related breadcrumb
+        mActivity.pairBreadcrumb(mPosition, this);
 
         // Is ChRooted environment?
         if (this.mNavigationMode.compareTo(NAVIGATION_MODE.PICKABLE) == 0) {
@@ -747,6 +761,7 @@ public class NavigationFragment extends Fragment implements
      */
     public void setBreadcrumb(Breadcrumb breadcrumb) {
         this.mBreadcrumb = breadcrumb;
+        this.mBreadcrumb.setNavigationFragment(this);
         this.mBreadcrumb.addBreadcrumbListener(mActivity);
     }
 

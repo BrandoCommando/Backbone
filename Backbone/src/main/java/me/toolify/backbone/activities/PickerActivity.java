@@ -121,11 +121,11 @@ public class PickerActivity extends AbstractNavigationActivity
     FileSystemObject mFso;  // The picked item
     FileSystemObject mCurrentDirectory;
     private AlertDialog mDialog;
-    private Handler mHandler;
     /**
      * @hide
      */
     NavigationFragment mNavigationFragment;
+    Breadcrumb mBreadcrumb;
     private View mRootView;
     private ButtonItem mFilesystemInfo;
     private ProgressBar mFilesystemInfoRefreshing;
@@ -274,6 +274,9 @@ public class PickerActivity extends AbstractNavigationActivity
                 measureHeight();
             }
         });
+
+        // Initialize the (pseudo) action bar
+        updateTitleActionBar();
 
         // Navigation view
         this.mNavigationFragment =
@@ -639,14 +642,25 @@ public class PickerActivity extends AbstractNavigationActivity
      * {@inheritDoc}
      */
     public void updateTitleActionBar() {
-        Breadcrumb breadcrumb = (Breadcrumb)this.mRootView.findViewById(R.id.breadcrumb_view);
+        mBreadcrumb = (Breadcrumb)this.mRootView.findViewById(R.id.breadcrumb_view);
         // Set the free disk space warning level of the breadcrumb widget
         String fds = Preferences.getSharedPreferences().getString(
                 FileManagerSettings.SETTINGS_DISK_USAGE_WARNING_LEVEL.getId(),
                 (String)FileManagerSettings.SETTINGS_DISK_USAGE_WARNING_LEVEL.getDefaultValue());
-        breadcrumb.setFreeDiskSpaceWarningLevel(Integer.parseInt(fds));
+        mBreadcrumb.setFreeDiskSpaceWarningLevel(Integer.parseInt(fds));
+    }
 
-        this.mNavigationFragment.setBreadcrumb(breadcrumb);
+    /**
+     * {@inheritDoc}
+     */
+    public void pairBreadcrumb(int position, NavigationFragment fragment) {
+        try {
+            fragment.setBreadcrumb(mBreadcrumb);
+        } catch (Throwable ex) {
+            Log.e(TAG,
+                    String.format("Failed to pair breadcrumb %d", //$NON-NLS-1$
+                            position, ex));
+        }
     }
 
     /**

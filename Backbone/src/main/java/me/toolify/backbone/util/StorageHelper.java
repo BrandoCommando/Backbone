@@ -108,8 +108,14 @@ public final class StorageHelper {
         return sStorageVolumes;
     }
 
-    private static StorageVolume convertToStorageVolume(FileSystemObject fso)
-    {
+    /**
+     * Method that returns a {@link me.toolify.backbone.model.StorageVolume}
+     * based on a supplied {@link me.toolify.backbone.model.FileSystemObject}
+     *
+     * @param fso the fso object to be converted to a StorageVolume
+     * @return
+     */
+    private static StorageVolume convertToStorageVolume(FileSystemObject fso) {
         String path = fso.getFullPath();
         int description = R.string.internal_storage;
         if (path.toLowerCase().indexOf("usb") != -1) //$NON-NLS-1$
@@ -166,8 +172,7 @@ public final class StorageHelper {
      * @param volume Object returned from StorageHelper.getStorageVolumes()
      * @return Mounted path
      */
-    public static String getStoragePath(Object volume)
-    {
+    public static String getStoragePath(Object volume) {
         try {
             Method gpm = volume.getClass().getMethod("getPath");
             Object gpo = gpm.invoke(volume);
@@ -185,8 +190,7 @@ public final class StorageHelper {
      * @param path Path to root of mount
      * @return boolean Whether path is mounted & valid
      */
-    public static boolean isValidMount(String path)
-    {
+    public static boolean isValidMount(String path) {
         MountPoint mp = MountPointHelper.getMountPointFromDirectory(path);
         if(mp == null) return false;
         if(mp.getOptions() == null) return false;

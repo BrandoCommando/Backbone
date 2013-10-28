@@ -19,14 +19,18 @@ package me.toolify.backbone.ui.widgets;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
+<<<<<<< HEAD:Backbone/src/main/java/me/toolify/backbone/ui/widgets/BreadcrumbSpinner.java
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+=======
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+>>>>>>> 81cd838309a0631ba51888c80c51658aa2c6c928:Backbone/src/main/java/me/toolify/backbone/ui/widgets/BreadcrumbSpinner.java
 import android.widget.Spinner;
 
 import java.io.File;
@@ -34,15 +38,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+<<<<<<< HEAD:Backbone/src/main/java/me/toolify/backbone/ui/widgets/BreadcrumbSpinner.java
 import me.toolify.backbone.R;
+=======
+>>>>>>> 81cd838309a0631ba51888c80c51658aa2c6c928:Backbone/src/main/java/me/toolify/backbone/ui/widgets/BreadcrumbSpinner.java
 import me.toolify.backbone.adapters.BreadcrumbSpinnerAdapter;
 import me.toolify.backbone.bus.BusProvider;
 import me.toolify.backbone.bus.events.FilesystemStatusUpdateEvent;
+import me.toolify.backbone.fragments.NavigationFragment;
 import me.toolify.backbone.model.DiskUsage;
 import me.toolify.backbone.model.MountPoint;
 import me.toolify.backbone.tasks.FilesystemAsyncTask;
-import me.toolify.backbone.ui.ThemeManager;
-import me.toolify.backbone.ui.ThemeManager.Theme;
 import me.toolify.backbone.util.FileHelper;
 import me.toolify.backbone.util.StorageHelper;
 
@@ -69,6 +75,10 @@ public class BreadcrumbSpinner extends Spinner implements Breadcrumb, OnItemSele
     private BreadcrumbSpinnerAdapter mAdapter;
 
     private String mCurrentPath;
+<<<<<<< HEAD:Backbone/src/main/java/me/toolify/backbone/ui/widgets/BreadcrumbSpinner.java
+=======
+    private NavigationFragment mNavigationFragment;
+>>>>>>> 81cd838309a0631ba51888c80c51658aa2c6c928:Backbone/src/main/java/me/toolify/backbone/ui/widgets/BreadcrumbSpinner.java
     /**
      * @hide
      */
@@ -190,6 +200,13 @@ public class BreadcrumbSpinner extends Spinner implements Breadcrumb, OnItemSele
     /**
      * {@inheritDoc}
      */
+    public void setNavigationFragment(NavigationFragment fragment) {
+        this.mNavigationFragment = fragment;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void changeBreadcrumbPath(final String newPath, final boolean chRooted) {
         //Sets the current path
@@ -229,6 +246,18 @@ public class BreadcrumbSpinner extends Spinner implements Breadcrumb, OnItemSele
         // Don't perform selection logic for the initial setSelection
         mPauseSpinnerClicks = true;
         this.setSelection(breadcrumbFiles.size()-1);
+<<<<<<< HEAD:Backbone/src/main/java/me/toolify/backbone/ui/widgets/BreadcrumbSpinner.java
+=======
+    }
+
+    /**
+     * Method that refreshes the breadcrumb based on the current directory,
+     * which is useful when orientation changes (and the resulting text size changes)
+     * are triggered.
+     */
+    public void refresh () {
+        changeBreadcrumbPath(mCurrentPath, mNavigationFragment.mChRooted);
+>>>>>>> 81cd838309a0631ba51888c80c51658aa2c6c928:Backbone/src/main/java/me/toolify/backbone/ui/widgets/BreadcrumbSpinner.java
     }
 
     /**
